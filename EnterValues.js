@@ -1,4 +1,3 @@
-// configEditor.js
 import fs from 'fs';
 import readline from 'readline';
 import chalk from 'chalk';
@@ -25,13 +24,13 @@ async function editConfig() {
     console.log(chalk.red("No config.json file found. Creating a new one.\n"));
   }
 
-  config.url = await prompt(`Server URL [${config.url || ''}]: `) || config.url;
-  config.logout_url = await prompt(`Logout URL [${config.logout_url || ''}]: `) || config.logout_url;
-  config.method = (await prompt(`Method (GET or POST) [${config.method || 'POST'}]: `)).toUpperCase() || config.method || 'POST';
+  config.url = await prompt(`Server URL [${config.url || ''}]: `) || config.url || '';
+  config.logout_url = await prompt(`Logout URL [${config.logout_url || ''}]: `) || config.logout_url || '';
+  config.method = (await prompt(`Method (GET or POST) [${config.method || 'POST'}]: `)).toUpperCase() || 'POST';
   config.length = parseInt(await prompt(`Total Username Length [${config.length || 8}]: `)) || config.length || 8;
   config.digits = await prompt(`Digits for Random Part [${config.digits || '0123456789'}]: `) || config.digits || '0123456789';
-  config.prefix = await prompt(`Username Prefix [${config.prefix || ''}]: `) || config.prefix || '';
-  config.suffix = await prompt(`Username Suffix [${config.suffix || ''}]: `) || config.suffix || '';
+  config.prefix = await prompt(`Username Prefix [${config.prefix || ''}]: `) || '';
+  config.suffix = await prompt(`Username Suffix [${config.suffix || ''}]: `) || '';
   config.count = parseInt(await prompt(`Usernames to Generate [${config.count || 50}]: `)) || config.count || 50;
 
   fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
@@ -41,3 +40,4 @@ async function editConfig() {
 }
 
 editConfig();
+
