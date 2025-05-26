@@ -1,10 +1,10 @@
 {
-    "url": "http://f.com/login",
-    "logout_url": "http://f.com/logout?erase-cookie=yes&var=callBack",
-    "method": "POST",
-    "length": 10,
-    "digits": "0123456789",
-    "prefix": "2",
-    "suffix": "05",
-    "count": 20000000
+  "url": "http://f.com/login",
+  "logout_url": "http://f.com/logout?erase-cookie=yes&var=callBack",
+  "method": "POST",
+  "length": 8,
+  "digits": "0123456789",
+  "prefix": "92",
+  "suffix": "",
+  "count": 200000000
 }
