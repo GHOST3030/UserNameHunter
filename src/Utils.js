@@ -130,3 +130,27 @@ export function generateUsername() {
     }
     return prefix + randomPart + suffix;
 }
+
+export function generateAlphaNumUsername() {
+    const letters = "abcdefghijklmnopqrstuvwxyz";
+    const digits = "0123456789";
+    const chars = letters + digits;
+
+    let randomPart = "";
+    let hasLetter = false;
+    let hasDigit = false;
+
+    while (randomPart.length < randomPartLength) {
+        const char = chars.charAt(Math.floor(Math.random() * chars.length));
+        randomPart += char;
+
+        if (letters.includes(char)) hasLetter = true;
+        if (digits.includes(char)) hasDigit = true;
+    }
+
+    if (!hasLetter || !hasDigit) {
+        return generateAlphaNumUsername(prefix, suffix, randomPartLength);
+    }
+
+    return prefix + randomPart + suffix;
+}

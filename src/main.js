@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { LogBanner, LogVaild, LogInvaild } from './Logger.js';
 import {
     sendRequest, Logout, checkServerConnection, generateUsername,
-    delay, AddtoFile, checkfromResponse, LoadUsernamesToTest
+    delay,generateAlphaNumUsername, AddtoFile, checkfromResponse, LoadUsernamesToTest
 }
     from './Utils.js'
 import { url, logout_url, count, config } from './variables.js';
@@ -31,8 +31,10 @@ export async function run() {
             LstModi = newModified;
             console.log(chalk.cyan("[+] New settings applied!"));
         }
-        let username = generateUsername();
-        if (tested.has(username)) {//console.log(_);
+        //let username = generateUsername();
+        
+      let username =generateAlphaNumUsername();
+      if (tested.has(username)) {//console.log(_);
             continue
         };
         tested.add(username);
