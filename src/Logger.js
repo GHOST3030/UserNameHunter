@@ -2,30 +2,22 @@ import chalk from 'chalk';
 import fs from 'fs';
 import { randomPartLength, config } from './variables.js';
 
-const BOX_WIDTH = 60;
+const RULE_WIDTH = 60;
+const RULE = chalk.cyan('─'.repeat(RULE_WIDTH));
 
-function center(text) {
-    const padding = Math.max(0, BOX_WIDTH - text.length);
-    const left = Math.floor(padding / 2);
-    const right = padding - left;
-    return ' '.repeat(left) + text + ' '.repeat(right);
-}
-
-function infoLine(label, value) {
-    const paddedLabel = label.padEnd(18, '.');
-    const raw = `  ${paddedLabel} ${value}`;
-    const display = raw.padEnd(BOX_WIDTH - 1);
-    return chalk.white(display.slice(0, raw.length)) + display.slice(raw.length);
+function field(icon, label, value, colorFn = chalk.whiteBright) {
+    const paddedLabel = chalk.bold.white(label.padEnd(14));
+    return `  ${icon} ${paddedLabel} ${colorFn(String(value))}`;
 }
 
 export function LogValid(username) {
-    console.log(chalk.green(`[+] Valid username: ${username}`));
+    console.log(chalk.bgGreen.black.bold(` MATCH `) + ' ' + chalk.green.bold(username));
     const timestamp = new Date().toLocaleString();
     fs.appendFileSync('./valid_usernames.txt', username + ' - Time: ' + timestamp + '\n');
 }
 
 export function LogInvalid(username) {
-    console.log(chalk.red(`[-] Invalid: ${username}`));
+    console.log(chalk.gray(`  ✗ ${username}`));
 }
 
 // Backwards-compatible aliases (original exported names)
@@ -33,21 +25,19 @@ export const LogVaild = LogValid;
 export const LogInvaild = LogInvalid;
 
 export function LogBanner(toolName) {
-    const border = chalk.cyan('╔' + '═'.repeat(BOX_WIDTH) + '╗');
-    const footer = chalk.cyan('╚' + '═'.repeat(BOX_WIDTH) + '╝');
-    const divider = chalk.cyan('║' + '─'.repeat(BOX_WIDTH) + '║');
-    const line = (text) => chalk.cyan('║') + chalk.green(center(text)) + chalk.cyan('║');
-    const infoRow = (text) => chalk.cyan('║') + text + chalk.cyan('║');
-
-    console.log(border);
-    console.log(line(toolName));
-    console.log(line('Developed By Ghost - Telegram @GHOST_529'));
-    console.log(divider);
-    console.log(infoRow(infoLine('Target', config.url)));
-    console.log(infoRow(infoLine('Method', config.method)));
-    console.log(infoRow(infoLine('Username Format', `${config.prefix}[random]${config.suffix}`)));
-    console.log(infoRow(infoLine('Random Length', randomPartLength)));
-    console.log(infoRow(infoLine('Usernames to Test', config.count)));
-    console.log(infoRow(infoLine('Started At', new Date().toLocaleString())));
-    console.log(footer);
+    console.log('');
+    console.log(RULE);
+    console.log(chalk.bold.cyanBright(`  ${toolName}`));
+    console.log(chalk.gray('  Developed By Ghost — Telegram @GHOST_529'));
+    console.log(RULE);
+    console.log('');
+    console.log(field('🎯', 'Target', config.url, chalk.cyan));
+    console.log(field('⚙️ ', 'Method', config.method, chalk.magenta));
+    console.log(field('🔤', 'Format', `${config.prefix}[random]${config.suffix}`, chalk.green));
+    console.log(field('📏', 'Rand. Length', randomPartLength, chalk.yellow));
+    console.log(field('🔢', 'To Test', config.count, chalk.yellow));
+    console.log(field('🕒', 'Started', new Date().toLocaleString(), chalk.gray));
+    console.log('');
+    console.log(RULE);
+    console.log('');
 }
