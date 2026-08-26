@@ -1,5 +1,7 @@
 # UserNameHunter (GhostUsernameHunter)
 
+*[اقرأ هذا بالعربية](README.ar.md)*
+
 A Node.js command-line tool that generates candidate usernames and probes a
 target login/registration endpoint (via HTTP GET or POST) to determine which
 ones are valid, using rotating HTTP proxies to distribute requests.
