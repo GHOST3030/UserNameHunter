@@ -1,1 +1,53 @@
-(function(_0x5d390b,_0x5003af){const _0x41cacb=a0_0x171c,_0x5976b4=_0x5d390b();while(!![]){try{const _0x68b1d=parseInt(_0x41cacb(0xa3))/0x1*(-parseInt(_0x41cacb(0xad))/0x2)+-parseInt(_0x41cacb(0x9c))/0x3+-parseInt(_0x41cacb(0x9f))/0x4*(-parseInt(_0x41cacb(0xa4))/0x5)+-parseInt(_0x41cacb(0xa6))/0x6+parseInt(_0x41cacb(0xa2))/0x7*(-parseInt(_0x41cacb(0x92))/0x8)+-parseInt(_0x41cacb(0x98))/0x9*(-parseInt(_0x41cacb(0x99))/0xa)+parseInt(_0x41cacb(0xa0))/0xb;if(_0x68b1d===_0x5003af)break;else _0x5976b4['push'](_0x5976b4['shift']());}catch(_0x5a9e01){_0x5976b4['push'](_0x5976b4['shift']());}}}(a0_0x2284,0x36db4));import a0_0x4860f2 from'chalk';import a0_0x5cec33 from'fs';import{randomPartLength,config}from'./variables.js';export function LogVaild(_0x31da25){const _0x559aa8=a0_0x171c;console['log'](a0_0x4860f2[_0x559aa8(0x97)](_0x559aa8(0x9b)+_0x31da25));const _0x35dcc3=new Date()['toLocaleString']();a0_0x5cec33[_0x559aa8(0x9d)](_0x559aa8(0xa8),_0x31da25+_0x559aa8(0xa7)+_0x35dcc3+'\x0a');}export function LogInvaild(_0x47d856){const _0x83d45=a0_0x171c;console['log'](a0_0x4860f2[_0x83d45(0x9e)](_0x83d45(0x9a)+_0x47d856));}export function LogBanner(_0x123cfe){const _0x498e14=a0_0x171c;console['log'](a0_0x4860f2['cyan']('='[_0x498e14(0xac)](0x3c))),console[_0x498e14(0xaa)](a0_0x4860f2['green']('\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x123cfe)),console['log'](a0_0x4860f2[_0x498e14(0xaf)]('='[_0x498e14(0xac)](0x3c))),console[_0x498e14(0xaa)](a0_0x4860f2['green'](_0x498e14(0x96))),console[_0x498e14(0xaa)](a0_0x4860f2[_0x498e14(0xaf)]('='[_0x498e14(0xac)](0x32))),console[_0x498e14(0xaa)](a0_0x4860f2[_0x498e14(0xab)](_0x498e14(0x95)+config['url'])),console[_0x498e14(0xaa)](a0_0x4860f2[_0x498e14(0xab)](_0x498e14(0x93)+config[_0x498e14(0x94)])),console[_0x498e14(0xaa)](a0_0x4860f2[_0x498e14(0xab)]('Usernames\x20to\x20Test:\x20'+config['count'])),console[_0x498e14(0xaa)](a0_0x4860f2[_0x498e14(0xab)](_0x498e14(0xa1)+config[_0x498e14(0xa5)]+'[random]'+config[_0x498e14(0xae)])),console[_0x498e14(0xaa)](a0_0x4860f2[_0x498e14(0xab)](_0x498e14(0xa9)+randomPartLength)),console[_0x498e14(0xaa)](a0_0x4860f2[_0x498e14(0xaf)]('='[_0x498e14(0xac)](0x32)));}function a0_0x171c(_0x238d08,_0x2ae303){const _0x228410=a0_0x2284();return a0_0x171c=function(_0x171cc5,_0x40c2b2){_0x171cc5=_0x171cc5-0x92;let _0x294e01=_0x228410[_0x171cc5];return _0x294e01;},a0_0x171c(_0x238d08,_0x2ae303);}function a0_0x2284(){const _0x1e7513=['Random\x20Length:\x20','log','yellow','repeat','4stPamB','suffix','cyan','30680GTyxBa','Method:\x20','method','Target:\x20','Developed\x20By\x20Ghost\x20Telegram\x20@GHOST_529','green','9KQMiEB','2976470xPHyid','[-]\x20Invalid:\x20','[+]\x20Valid\x20username:\x20','1297317lJIzty','appendFileSync','red','236564eaubaF','9527771zyDNLD','Username\x20Format:\x20','784uGnbrZ','156599iQxUdO','35xyAolm','prefix','1067676ssuYiq','\x20-\x20Time:\x20','./valid_usernames.txt'];a0_0x2284=function(){return _0x1e7513;};return a0_0x2284();}
+import chalk from 'chalk';
+import fs from 'fs';
+import { randomPartLength, config } from './variables.js';
+
+const BOX_WIDTH = 60;
+
+function center(text) {
+    const padding = Math.max(0, BOX_WIDTH - text.length);
+    const left = Math.floor(padding / 2);
+    const right = padding - left;
+    return ' '.repeat(left) + text + ' '.repeat(right);
+}
+
+function infoLine(label, value) {
+    const paddedLabel = label.padEnd(18, '.');
+    const raw = `  ${paddedLabel} ${value}`;
+    const display = raw.padEnd(BOX_WIDTH - 1);
+    return chalk.white(display.slice(0, raw.length)) + display.slice(raw.length);
+}
+
+export function LogValid(username) {
+    console.log(chalk.green(`[+] Valid username: ${username}`));
+    const timestamp = new Date().toLocaleString();
+    fs.appendFileSync('./valid_usernames.txt', username + ' - Time: ' + timestamp + '\n');
+}
+
+export function LogInvalid(username) {
+    console.log(chalk.red(`[-] Invalid: ${username}`));
+}
+
+// Backwards-compatible aliases (original exported names)
+export const LogVaild = LogValid;
+export const LogInvaild = LogInvalid;
+
+export function LogBanner(toolName) {
+    const border = chalk.cyan('╔' + '═'.repeat(BOX_WIDTH) + '╗');
+    const footer = chalk.cyan('╚' + '═'.repeat(BOX_WIDTH) + '╝');
+    const divider = chalk.cyan('║' + '─'.repeat(BOX_WIDTH) + '║');
+    const line = (text) => chalk.cyan('║') + chalk.green(center(text)) + chalk.cyan('║');
+    const infoRow = (text) => chalk.cyan('║') + text + chalk.cyan('║');
+
+    console.log(border);
+    console.log(line(toolName));
+    console.log(line('Developed By Ghost - Telegram @GHOST_529'));
+    console.log(divider);
+    console.log(infoRow(infoLine('Target', config.url)));
+    console.log(infoRow(infoLine('Method', config.method)));
+    console.log(infoRow(infoLine('Username Format', `${config.prefix}[random]${config.suffix}`)));
+    console.log(infoRow(infoLine('Random Length', randomPartLength)));
+    console.log(infoRow(infoLine('Usernames to Test', config.count)));
+    console.log(infoRow(infoLine('Started At', new Date().toLocaleString())));
+    console.log(footer);
+}
