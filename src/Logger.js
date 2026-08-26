@@ -10,10 +10,14 @@ function field(icon, label, value, colorFn = chalk.whiteBright) {
     return `  ${icon} ${paddedLabel} ${colorFn(String(value))}`;
 }
 
-export function LogValid(username) {
-    console.log(chalk.bgGreen.black.bold(` MATCH `) + ' ' + chalk.green.bold(username));
+function recordValid(username) {
     const timestamp = new Date().toLocaleString();
     fs.appendFileSync('./valid_usernames.txt', username + ' - Time: ' + timestamp + '\n');
+}
+
+export function LogValid(username) {
+    console.log(chalk.bgGreen.black.bold(` MATCH `) + ' ' + chalk.green.bold(username));
+    recordValid(username);
 }
 
 export function LogInvalid(username) {
@@ -23,6 +27,33 @@ export function LogInvalid(username) {
 // Backwards-compatible aliases (original exported names)
 export const LogVaild = LogValid;
 export const LogInvaild = LogInvalid;
+
+export function LogInfo(text) {
+    console.log(chalk.cyan(`  ℹ ${text}`));
+}
+
+export function LogWarn(text) {
+    console.log(chalk.yellow(`  ⚠ ${text}`));
+}
+
+/**
+ * One consolidated line per attempt instead of separate
+ * "testing" / "result" / "timing" prints.
+ */
+export function LogAttempt(index, username, isValid, ms) {
+    const num = chalk.gray(`#${String(index).padStart(5)}`);
+    const name = chalk.whiteBright(username.padEnd(16));
+    const status = isValid
+        ? chalk.bgGreen.black.bold(' MATCH ')
+        : chalk.gray('   ·    ');
+    const time = ms > 2000 ? chalk.red(`${ms}ms`) : chalk.dim(`${ms}ms`);
+
+    console.log(`  ${num}  ${name} ${status}  ${time}`);
+
+    if (isValid) {
+        recordValid(username);
+    }
+}
 
 export function LogBanner(toolName) {
     console.log('');
@@ -40,4 +71,6 @@ export function LogBanner(toolName) {
     console.log('');
     console.log(RULE);
     console.log('');
+    console.log(chalk.gray(`  ${'#'.padStart(6)}  ${'Username'.padEnd(16)} Result     Time`));
+    console.log(chalk.gray(`  ${'─'.repeat(RULE_WIDTH - 2)}`));
 }
