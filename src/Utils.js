@@ -65,11 +65,13 @@ export async function sendRequest(username) {
 
     const proxy = proxies[Math.floor(Math.random() * proxies.length)];
     const agent = new HttpsProxyAgent(proxy);
+    const REQUEST_TIMEOUT_MS = 5000;
 
     if (method === "POST") {
         return await axios.post(url, data, {
             headers: headers,
-            httpsAgent: agent
+            httpsAgent: agent,
+            timeout: REQUEST_TIMEOUT_MS
         });
     } else if (method === "GET") {
         const config = {
@@ -78,7 +80,8 @@ export async function sendRequest(username) {
                 verify: 'callBack'
             },
             headers: headers,
-            httpsAgent: agent
+            httpsAgent: agent,
+            timeout: REQUEST_TIMEOUT_MS
         };
         return await axios.get(url, config);
     } else {

@@ -14,15 +14,20 @@ let tested = LoadUsernamesToTest();
 let i = 0;
 let c = 0;
 LogBanner(TOOL_NAME);
-export async function run() {
-    for (let _ = 0; _ < count; _++) {
-        let serverOnline = await checkServerConnection();
-        while (!serverOnline) {
-            console.log(chalk.green(`[+] Waiting for network connection...`));
-            await delay(5000);
-            serverOnline = await checkServerConnection(url);
-        }
 
+async function waitForServer() {
+    let serverOnline = await checkServerConnection();
+    while (!serverOnline) {
+        console.log(chalk.green(`[+] Waiting for network connection...`));
+        await delay(5000);
+        serverOnline = await checkServerConnection(url);
+    }
+}
+
+export async function run() {
+    await waitForServer();
+
+    for (let _ = 0; _ < count; _++) {
         const startt = Date.now();
         const newModified = LastModified();
         if (newModified !== LstModi) {
@@ -64,7 +69,8 @@ try {
 }
  catch (err) {
     console.log(chalk.red(`[!] Request failed for ${username}: ${err.code || err.message}`));
-    continue; 
+    await waitForServer();
+    continue;
 }
 
 
