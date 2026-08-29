@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import { LogBanner, LogAttempt, LogInfo, LogWarn } from './Logger.js';
 import {
     sendRequest, Logout, checkServerConnection, generateUsername,
-    delay,generateAlphaNumUsername, AddtoFile, checkfromResponse, LoadUsernamesToTest
+    delay, AddtoFile, checkfromResponse, LoadUsernamesToTest
 }
     from './Utils.js'
 import { url, logout_url, count, config } from './variables.js';
@@ -37,7 +37,7 @@ export async function run() {
             LogInfo('تم تطبيق الإعدادات الجديدة!');
         }
 
-        let username = generateAlphaNumUsername();
+        let username = generateUsername();
         if (tested.has(username)) {
             continue;
         }

@@ -63,8 +63,8 @@ export async function sendRequest(username) {
         verfiy: false
     });
 
-    const proxy = proxies[Math.floor(Math.random() * proxies.length)];
-    const agent = new HttpsProxyAgent(proxy);
+    const proxy = proxies.length ? proxies[Math.floor(Math.random() * proxies.length)] : null;
+    const agent = proxy ? new HttpsProxyAgent(proxy) : undefined;
     const REQUEST_TIMEOUT_MS = 5000;
 
     if (method === "POST") {
@@ -131,29 +131,5 @@ export function generateUsername() {
     for (let i = 0; i < randomPartLength; i++) {
         randomPart += digits.charAt(Math.floor(Math.random() * digits.length));
     }
-    return prefix + randomPart + suffix;
-}
-
-export function generateAlphaNumUsername() {
-    const letters = "abcdefghijklmnopqrstuvwxyz";
-    const digits = "0123456789";
-    const chars = letters + digits;
-
-    let randomPart = "";
-    let hasLetter = false;
-    let hasDigit = false;
-
-    while (randomPart.length < randomPartLength) {
-        const char = chars.charAt(Math.floor(Math.random() * chars.length));
-        randomPart += char;
-
-        if (letters.includes(char)) hasLetter = true;
-        if (digits.includes(char)) hasDigit = true;
-    }
-
-    if (!hasLetter || !hasDigit) {
-        return generateAlphaNumUsername(prefix, suffix, randomPartLength);
-    }
-
     return prefix + randomPart + suffix;
 }

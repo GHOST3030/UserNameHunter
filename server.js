@@ -6,7 +6,6 @@ import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = path.join(__dirname, 'src', 'config.json');
-const PROXIES_PATH = path.join(__dirname, 'src', 'proxies.js');
 const VALID_PATH = path.join(__dirname, 'valid_usernames.txt');
 
 const app = express();
@@ -30,9 +29,7 @@ function broadcast(event, data) {
 app.get('/api/config', (req, res) => {
     try {
         const config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
-        const proxiesSrc = fs.readFileSync(PROXIES_PATH, 'utf-8');
-        const proxies = [...proxiesSrc.matchAll(/['"]([^'"]+)['"]/g)].map(m => m[1]);
-        res.json({ config, proxies });
+        res.json({ config });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
@@ -40,7 +37,7 @@ app.get('/api/config', (req, res) => {
 
 app.post('/api/config', (req, res) => {
     try {
-        const { config, proxies } = req.body;
+        const { config } = req.body;
 
         const required = ['url', 'method', 'length', 'digits', 'count'];
         for (const key of required) {
@@ -55,16 +52,6 @@ app.post('/api/config', (req, res) => {
         }
 
         fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2), 'utf-8');
-
-        if (Array.isArray(proxies)) {
-            const list = proxies
-                .map(p => String(p).trim())
-                .filter(Boolean)
-                .map(p => `  ${JSON.stringify(p)}`)
-                .join(',\n');
-            const proxiesSrc = `export const proxies = [\n${list}\n];\n`;
-            fs.writeFileSync(PROXIES_PATH, proxiesSrc, 'utf-8');
-        }
 
         res.json({ ok: true });
     } catch (err) {

@@ -24,30 +24,24 @@ function readForm() {
     const config = {
         url: data.get('url').trim(),
         logout_url: data.get('logout_url').trim(),
-        method: data.get('method'),
+        method: 'POST',
         length: Number(data.get('length')),
         digits: data.get('digits').trim() || '0123456789',
         prefix: data.get('prefix').trim(),
         suffix: data.get('suffix').trim(),
         count: Number(data.get('count'))
     };
-    const proxies = data.get('proxies')
-        .split('\n')
-        .map(p => p.trim())
-        .filter(Boolean);
-    return { config, proxies };
+    return { config };
 }
 
-function fillForm({ config, proxies }) {
+function fillForm({ config }) {
     form.url.value = config.url || '';
     form.logout_url.value = config.logout_url || '';
-    form.method.value = config.method || 'POST';
     form.length.value = config.length ?? '';
     form.digits.value = config.digits || '0123456789';
     form.prefix.value = config.prefix || '';
     form.suffix.value = config.suffix || '';
     form.count.value = config.count ?? '';
-    form.proxies.value = (proxies || []).join('\n');
 }
 
 async function loadConfig() {
