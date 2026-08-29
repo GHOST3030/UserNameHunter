@@ -120,7 +120,7 @@ stream.addEventListener('status', (e) => {
 stream.addEventListener('log', (e) => {
     const data = JSON.parse(e.data);
     appendLog(data.line);
-    if (data.line.includes('MATCH')) loadResults();
+    if (data.line.includes('صحيح')) loadResults();
 });
 
 loadConfig();

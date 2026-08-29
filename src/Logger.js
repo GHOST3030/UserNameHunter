@@ -16,7 +16,7 @@ function recordValid(username) {
 }
 
 export function LogValid(username) {
-    console.log(chalk.bgGreen.black.bold(` MATCH `) + ' ' + chalk.green.bold(username));
+    console.log(chalk.bgGreen.black.bold(` كرت صحيح `) + ' ' + chalk.green.bold(username));
     recordValid(username);
 }
 
@@ -44,9 +44,9 @@ export function LogAttempt(index, username, isValid, ms) {
     const num = chalk.gray(`#${String(index).padStart(5)}`);
     const name = chalk.whiteBright(username.padEnd(16));
     const status = isValid
-        ? chalk.bgGreen.black.bold(' MATCH ')
-        : chalk.gray('   ·    ');
-    const time = ms > 2000 ? chalk.red(`${ms}ms`) : chalk.dim(`${ms}ms`);
+        ? chalk.bgGreen.black.bold(' صحيح ')
+        : chalk.gray('   ·   ');
+    const time = ms > 2000 ? chalk.red(`${ms} م.ث`) : chalk.dim(`${ms} م.ث`);
 
     console.log(`  ${num}  ${name} ${status}  ${time}`);
 
@@ -59,18 +59,18 @@ export function LogBanner(toolName) {
     console.log('');
     console.log(RULE);
     console.log(chalk.bold.cyanBright(`  ${toolName}`));
-    console.log(chalk.gray('  Developed By Ghost — Telegram @GHOST_529'));
+    console.log(chalk.gray('  تطوير: Ghost — تيليجرام @GHOST_529'));
     console.log(RULE);
     console.log('');
-    console.log(field('🎯', 'Target', config.url, chalk.cyan));
-    console.log(field('⚙️ ', 'Method', config.method, chalk.magenta));
-    console.log(field('🔤', 'Format', `${config.prefix}[random]${config.suffix}`, chalk.green));
-    console.log(field('📏', 'Rand. Length', randomPartLength, chalk.yellow));
-    console.log(field('🔢', 'To Test', config.count, chalk.yellow));
-    console.log(field('🕒', 'Started', new Date().toLocaleString(), chalk.gray));
+    console.log(field('🎯', 'الهدف', config.url, chalk.cyan));
+    console.log(field('⚙️ ', 'الطريقة', config.method, chalk.magenta));
+    console.log(field('🔤', 'الصيغة', `${config.prefix}[عشوائي]${config.suffix}`, chalk.green));
+    console.log(field('📏', 'الطول العشوائي', randomPartLength, chalk.yellow));
+    console.log(field('🔢', 'عدد المحاولات', config.count, chalk.yellow));
+    console.log(field('🕒', 'وقت البدء', new Date().toLocaleString(), chalk.gray));
     console.log('');
     console.log(RULE);
     console.log('');
-    console.log(chalk.gray(`  ${'#'.padStart(6)}  ${'Username'.padEnd(16)} Result     Time`));
+    console.log(chalk.gray(`  ${'#'.padStart(6)}  ${'الكرت'.padEnd(16)} النتيجة     الوقت`));
     console.log(chalk.gray(`  ${'─'.repeat(RULE_WIDTH - 2)}`));
 }

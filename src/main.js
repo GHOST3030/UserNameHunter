@@ -18,7 +18,7 @@ LogBanner(TOOL_NAME);
 async function waitForServer() {
     let serverOnline = await checkServerConnection();
     while (!serverOnline) {
-        LogWarn('Waiting for network connection...');
+        LogWarn('بانتظار الاتصال بالشبكة...');
         await delay(5000);
         serverOnline = await checkServerConnection(url);
     }
@@ -31,10 +31,10 @@ export async function run() {
         const startt = Date.now();
         const newModified = LastModified();
         if (newModified !== LstModi) {
-            LogInfo('Detected change in config.json, reloading...');
+            LogInfo('تم اكتشاف تغيير في الإعدادات، جارِ إعادة التحميل...');
             config;
             LstModi = newModified;
-            LogInfo('New settings applied!');
+            LogInfo('تم تطبيق الإعدادات الجديدة!');
         }
 
         let username = generateAlphaNumUsername();
@@ -56,11 +56,11 @@ export async function run() {
                 Logout(username);
             }
         } catch (err) {
-            console.log(chalk.red(`  ✗ ${username}  request failed: ${err.code || err.message}`));
+            console.log(chalk.red(`  ✗ ${username}  فشل الطلب: ${err.code || err.message}`));
             await waitForServer();
             continue;
         }
     }
 
-    LogInfo('Done.');
+    LogInfo('تم الانتهاء.');
 };
