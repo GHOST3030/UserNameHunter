@@ -14,42 +14,49 @@
 
 <main>
   <section class="panel">
-    <h2>الإعدادات</h2>
     <form id="config-form">
-      <label>رابط الهدف (URL)
-        <input type="text" name="url" placeholder="http://192.168.88.1/login" required>
-      </label>
-      <label>رابط تسجيل الخروج (اختياري)
-        <input type="text" name="logout_url" placeholder="http://192.168.88.1/logout">
-      </label>
-      <label>الطريقة (Method)
-        <select name="method">
-          <option value="POST">POST</option>
-          <option value="GET">GET</option>
-        </select>
-      </label>
-      <div class="row">
-        <label>الطول الكلي
-          <input type="number" name="length" min="1" required>
+      <fieldset>
+        <legend>🌐 بيانات الشبكة</legend>
+        <label>رابط تسجيل الدخول
+          <input type="text" name="url" placeholder="http://192.168.88.1/login" required>
         </label>
-        <label>عدد المحاولات
-          <input type="number" name="count" min="1" required>
+        <label>رابط تسجيل الخروج (اختياري)
+          <input type="text" name="logout_url" placeholder="http://192.168.88.1/logout">
         </label>
-      </div>
-      <div class="row">
-        <label>البادئة (Prefix)
-          <input type="text" name="prefix" placeholder="">
+        <label>طريقة الإرسال
+          <select name="method">
+            <option value="POST">POST</option>
+            <option value="GET">GET</option>
+          </select>
         </label>
-        <label>اللاحقة (Suffix)
-          <input type="text" name="suffix" placeholder="">
+        <label>البروكسيات (بروكسي واحد بكل سطر)
+          <textarea name="proxies" rows="3" placeholder="http://192.168.1.100:8080"></textarea>
         </label>
-      </div>
-      <label>مجموعة الأرقام (Digits)
-        <input type="text" name="digits" placeholder="0123456789">
-      </label>
-      <label>البروكسيات (بروكسي واحد بكل سطر)
-        <textarea name="proxies" rows="4" placeholder="http://192.168.1.100:8080"></textarea>
-      </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>🎫 بيانات الكرت</legend>
+        <div class="row">
+          <label>طول الكرت
+            <input type="number" name="length" min="1" required>
+          </label>
+          <label>عدد المحاولات
+            <input type="number" name="count" min="1" required>
+          </label>
+        </div>
+        <div class="row">
+          <label>البادئة
+            <input type="text" name="prefix" placeholder="">
+          </label>
+          <label>اللاحقة
+            <input type="text" name="suffix" placeholder="">
+          </label>
+        </div>
+        <label>مجموعة الأرقام
+          <input type="text" name="digits" placeholder="0123456789">
+        </label>
+      </fieldset>
+
       <div class="actions">
         <button type="submit" class="btn secondary">💾 حفظ الإعدادات</button>
         <button type="button" id="start-btn" class="btn primary">▶️ تشغيل</button>
@@ -65,7 +72,7 @@
   </section>
 
   <section class="panel">
-    <h2>النتائج الصحيحة</h2>
+    <h2>🎟️ الكروت الصحيحة <span id="results-count" class="count-pill">0</span></h2>
     <ul id="results-list" class="results-list"></ul>
   </section>
 </main>

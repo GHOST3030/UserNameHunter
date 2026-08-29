@@ -5,6 +5,7 @@ const stopBtn = document.getElementById('stop-btn');
 const configMsg = document.getElementById('config-msg');
 const logBox = document.getElementById('log-box');
 const resultsList = document.getElementById('results-list');
+const resultsCount = document.getElementById('results-count');
 
 function setRunning(running) {
     statusBadge.textContent = running ? 'شغّال' : 'متوقف';
@@ -55,13 +56,31 @@ async function loadConfig() {
     if (res.ok) fillForm(data);
 }
 
+function parseResultLine(line) {
+    const [user, timePart] = line.split(' - Time: ');
+    return { user: user.trim(), time: (timePart || '').trim() };
+}
+
 async function loadResults() {
     const res = await fetch('/api/results');
     const data = await res.json();
+    const results = data.results || [];
+    resultsCount.textContent = results.length;
     resultsList.innerHTML = '';
-    for (const line of data.results || []) {
+    for (const line of results) {
+        const { user, time } = parseResultLine(line);
         const li = document.createElement('li');
-        li.textContent = line;
+        li.className = 'card';
+        li.innerHTML = `
+            <span class="card-user"></span>
+            <span class="card-time"></span>
+            <button type="button" class="copy-btn">📋 نسخ</button>
+        `;
+        li.querySelector('.card-user').textContent = user;
+        li.querySelector('.card-time').textContent = time;
+        li.querySelector('.copy-btn').addEventListener('click', () => {
+            navigator.clipboard.writeText(user);
+        });
         resultsList.appendChild(li);
     }
 }

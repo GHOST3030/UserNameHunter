@@ -70,6 +70,31 @@ label {
   margin-bottom: 10px;
 }
 
+fieldset {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 14px 4px;
+  margin: 0 0 16px;
+}
+
+legend {
+  padding: 0 8px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: var(--text);
+}
+
+.count-pill {
+  display: inline-block;
+  background: rgba(34,197,94,0.15);
+  color: var(--accent);
+  font-size: 0.75rem;
+  padding: 2px 9px;
+  border-radius: 999px;
+  margin-inline-start: 6px;
+  vertical-align: middle;
+}
+
 input, select, textarea {
   width: 100%;
   margin-top: 4px;
@@ -130,20 +155,58 @@ textarea { resize: vertical; font-family: monospace; }
   list-style: none;
   margin: 0;
   padding: 0;
-  max-height: 200px;
+  max-height: 260px;
   overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
 }
-.results-list li {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: rgba(34,197,94,0.1);
-  color: var(--accent);
-  margin-bottom: 6px;
-  font-family: monospace;
-  font-size: 0.85rem;
+.results-list:empty {
+  display: block;
 }
 .results-list:empty::after {
-  content: "لا توجد نتائج بعد";
+  content: "لا توجد كروت صحيحة بعد";
   color: var(--muted);
   font-size: 0.85rem;
 }
+
+.card {
+  position: relative;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(34,197,94,0.16), rgba(34,197,94,0.05));
+  border: 1px dashed rgba(34,197,94,0.4);
+  overflow: hidden;
+}
+.card::before {
+  content: "🎫";
+  position: absolute;
+  inset-inline-end: 10px;
+  top: 10px;
+  opacity: 0.5;
+  font-size: 1.1rem;
+}
+.card .card-user {
+  font-family: monospace;
+  font-size: 1rem;
+  font-weight: bold;
+  color: var(--accent);
+  word-break: break-all;
+}
+.card .card-time {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.card .copy-btn {
+  margin-top: 8px;
+  font-size: 0.72rem;
+  padding: 4px 10px;
+  border: 1px solid rgba(34,197,94,0.4);
+  background: transparent;
+  color: var(--accent);
+  border-radius: 999px;
+  cursor: pointer;
+}
+.card .copy-btn:hover { background: rgba(34,197,94,0.15); }
