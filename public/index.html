@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GhostUsernameHunter</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>👻 GhostUsernameHunter</h1>
+  <span id="status-badge" class="badge idle">متوقف</span>
+</header>
+
+<main>
+  <section class="panel">
+    <h2>الإعدادات</h2>
+    <form id="config-form">
+      <label>رابط الهدف (URL)
+        <input type="text" name="url" placeholder="http://192.168.88.1/login" required>
+      </label>
+      <label>رابط تسجيل الخروج (اختياري)
+        <input type="text" name="logout_url" placeholder="http://192.168.88.1/logout">
+      </label>
+      <label>الطريقة (Method)
+        <select name="method">
+          <option value="POST">POST</option>
+          <option value="GET">GET</option>
+        </select>
+      </label>
+      <div class="row">
+        <label>الطول الكلي
+          <input type="number" name="length" min="1" required>
+        </label>
+        <label>عدد المحاولات
+          <input type="number" name="count" min="1" required>
+        </label>
+      </div>
+      <div class="row">
+        <label>البادئة (Prefix)
+          <input type="text" name="prefix" placeholder="">
+        </label>
+        <label>اللاحقة (Suffix)
+          <input type="text" name="suffix" placeholder="">
+        </label>
+      </div>
+      <label>مجموعة الأرقام (Digits)
+        <input type="text" name="digits" placeholder="0123456789">
+      </label>
+      <label>البروكسيات (بروكسي واحد بكل سطر)
+        <textarea name="proxies" rows="4" placeholder="http://192.168.1.100:8080"></textarea>
+      </label>
+      <div class="actions">
+        <button type="submit" class="btn secondary">💾 حفظ الإعدادات</button>
+        <button type="button" id="start-btn" class="btn primary">▶️ تشغيل</button>
+        <button type="button" id="stop-btn" class="btn danger" disabled>⏹️ إيقاف</button>
+      </div>
+      <p id="config-msg" class="msg"></p>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>السجل المباشر</h2>
+    <pre id="log-box" class="log-box"></pre>
+  </section>
+
+  <section class="panel">
+    <h2>النتائج الصحيحة</h2>
+    <ul id="results-list" class="results-list"></ul>
+  </section>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

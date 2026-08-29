@@ -167,6 +167,30 @@ What happens:
   duplicate work across runs).
 - `valid_usernames.txt` – usernames confirmed valid, with timestamps.
 
+## Web UI
+
+A local web interface is available for people who'd rather use a form than
+edit JSON/JS files by hand. It runs entirely on your own machine — nothing
+is exposed to the internet unless you deliberately do so yourself.
+
+```bash
+npm install express axios chalk https-proxy-agent
+node server.js
+```
+
+Then open `http://localhost:3000` in a browser. From there you can:
+
+- Edit the target URL, method, username format, count, and proxy list, and
+  save them to `src/config.json` / `src/proxies.js`.
+- Start and stop a run with buttons (this spawns `node RunTool.js` as a
+  child process — the same CLI tool described above).
+- Watch a live log of each attempt over Server-Sent Events.
+- See confirmed-valid usernames as they're found.
+
+The server only listens on `localhost` by default (`PORT` env var to
+change the port). It does not add authentication, so only run it on a
+machine/network you trust.
+
 ## Notes
 
 - `RunTool.js`, `src/config.js`, `src/variables.js`, and `src/Logger.js`
