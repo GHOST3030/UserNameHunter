@@ -1,4 +1,4 @@
-export const proxies = [
-  'http://192.168.1.100:8080',                                                                    'http://192.168.1.101:8080',
-  'http://192.168.1.102:8080'                                                                     // أضف المزيد
-];
+// Optional: list HTTP/HTTPS proxies to route requests through.
+// Leave empty for a direct connection (the default — no proxy needed
+// when testing a device on your own local network).
+export const proxies = [];
