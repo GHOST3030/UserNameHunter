@@ -3,6 +3,9 @@ import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import axios from 'axios';
+import { url as targetUrl, headers } from './src/variables.js';
+import { parseCardStatus, updateCard } from './src/Card.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CONFIG_PATH = path.join(__dirname, 'src', 'config.json');
@@ -109,6 +112,48 @@ app.get('/api/results', (req, res) => {
             .filter(Boolean)
             .reverse();
         res.json({ results });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/card/status', async (req, res) => {
+    try {
+        const { username } = req.body;
+        if (!username) {
+            return res.status(400).json({ error: 'Missing field: username' });
+        }
+
+        const response = await axios.get(targetUrl, {
+            params: { username, verify: 'callBack' },
+            headers,
+            timeout: 5000
+        });
+
+        const details = parseCardStatus(response.data);
+        if (!details) {
+            return res.status(404).json({ error: 'Card not logged in or not found' });
+        }
+
+        res.json({ details });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+app.post('/api/card/update', async (req, res) => {
+    try {
+        const { username, speed, updatesEnabled } = req.body;
+        if (!username || !speed) {
+            return res.status(400).json({ error: 'Missing field: username or speed' });
+        }
+
+        const details = await updateCard(username, speed, Boolean(updatesEnabled));
+        if (!details) {
+            return res.status(404).json({ error: 'Card not logged in or not found' });
+        }
+
+        res.json({ details });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

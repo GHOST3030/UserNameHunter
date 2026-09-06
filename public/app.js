@@ -75,6 +75,10 @@ async function loadResults() {
         li.querySelector('.copy-btn').addEventListener('click', () => {
             navigator.clipboard.writeText(user);
         });
+        li.addEventListener('click', () => {
+            const cardUsernameInput = document.querySelector('#card-form [name="cardUsername"]');
+            if (cardUsernameInput) cardUsernameInput.value = user;
+        });
         resultsList.appendChild(li);
     }
 }
@@ -104,6 +108,79 @@ startBtn.addEventListener('click', async () => {
 stopBtn.addEventListener('click', async () => {
     await fetch('/api/stop', { method: 'POST' });
 });
+
+const cardForm = document.getElementById('card-form');
+const cardStatusBtn = document.getElementById('card-status-btn');
+const cardUpdateBtn = document.getElementById('card-update-btn');
+const cardMsg = document.getElementById('card-msg');
+const cardDetails = document.getElementById('card-details');
+
+function formatBytes(bytes) {
+    if (bytes === null || bytes === undefined) return '-';
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let value = bytes;
+    let i = 0;
+    while (value >= 1024 && i < units.length - 1) {
+        value /= 1024;
+        i++;
+    }
+    return `${value.toFixed(1)} ${units[i]}`;
+}
+
+function renderCardDetails(details) {
+    cardDetails.hidden = false;
+    document.getElementById('card-time-left').textContent = details.sessionTimeLeft || '-';
+    document.getElementById('card-uptime').textContent = details.uptime || '-';
+    document.getElementById('card-remaining').textContent = formatBytes(details.remainBytesTotal);
+    document.getElementById('card-traffic').textContent =
+        `⬆ ${formatBytes(details.bytesIn)} / ⬇ ${formatBytes(details.bytesOut)}`;
+    document.getElementById('card-current-speed').textContent = details.speed || '-';
+}
+
+async function fetchCardStatus() {
+    const username = cardForm.cardUsername.value.trim();
+    if (!username) return;
+
+    cardMsg.textContent = '⏳ جاري الجلب...';
+    const res = await fetch('/api/card/status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+        cardMsg.textContent = `❌ ${data.error}`;
+        return;
+    }
+    cardMsg.textContent = '✅ تم الجلب';
+    renderCardDetails(data.details);
+}
+
+async function updateCardRequest() {
+    const username = cardForm.cardUsername.value.trim();
+    const speed = cardForm.cardSpeed.value;
+    const updatesEnabled = cardForm.cardUpdates.value === '1';
+    if (!username) return;
+
+    cardMsg.textContent = '⏳ جاري التحديث...';
+    const res = await fetch('/api/card/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, speed, updatesEnabled })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+        cardMsg.textContent = `❌ ${data.error}`;
+        return;
+    }
+    cardMsg.textContent = '✅ تم تحديث الكرت';
+    renderCardDetails(data.details);
+}
+
+cardStatusBtn.addEventListener('click', fetchCardStatus);
+cardUpdateBtn.addEventListener('click', updateCardRequest);
 
 const stream = new EventSource('/api/stream');
 stream.addEventListener('status', (e) => {

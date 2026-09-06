@@ -210,3 +210,27 @@ textarea { resize: vertical; font-family: monospace; }
   cursor: pointer;
 }
 .card .copy-btn:hover { background: rgba(34,197,94,0.15); }
+
+.card-details {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+.card-details .stat {
+  background: #0f1115;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.card-details .stat span {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.card-details .stat strong {
+  font-size: 0.95rem;
+  color: var(--text);
+}

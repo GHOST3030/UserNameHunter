@@ -66,6 +66,44 @@
     <h2>🎟️ الكروت الصحيحة <span id="results-count" class="count-pill">0</span></h2>
     <ul id="results-list" class="results-list"></ul>
   </section>
+
+  <section class="panel">
+    <h2>🔄 تفاصيل وتحديث كرت</h2>
+    <form id="card-form">
+      <label>اسم الكرت (يوزر نيم)
+        <input type="text" name="cardUsername" placeholder="a1b2c3d4" required>
+      </label>
+      <div class="row">
+        <label>السرعة
+          <select name="cardSpeed">
+            <option value="economic">اقتصادية</option>
+            <option value="normal">عادية</option>
+            <option value="middle" selected>متوسطة</option>
+            <option value="high">عالية</option>
+            <option value="very">عالية جدًا</option>
+          </select>
+        </label>
+        <label>التحديثات
+          <select name="cardUpdates">
+            <option value="1" selected>تفعيل</option>
+            <option value="0">إيقاف</option>
+          </select>
+        </label>
+      </div>
+      <div class="actions">
+        <button type="button" id="card-status-btn" class="btn secondary">🔍 جلب التفاصيل</button>
+        <button type="button" id="card-update-btn" class="btn primary">🔄 تحديث الكرت</button>
+      </div>
+      <p id="card-msg" class="msg"></p>
+    </form>
+    <div id="card-details" class="card-details" hidden>
+      <div class="stat"><span>الوقت المتبقي</span><strong id="card-time-left">-</strong></div>
+      <div class="stat"><span>متصل منذ</span><strong id="card-uptime">-</strong></div>
+      <div class="stat"><span>البيانات المتبقية</span><strong id="card-remaining">-</strong></div>
+      <div class="stat"><span>الرفع / التحميل</span><strong id="card-traffic">-</strong></div>
+      <div class="stat"><span>السرعة الحالية</span><strong id="card-current-speed">-</strong></div>
+    </div>
+  </section>
 </main>
 
 <script src="app.js"></script>
