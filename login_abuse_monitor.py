@@ -13,6 +13,12 @@ This is a detection aid, not a firewall: on each flagged IP it prints an
 alert and appends the IP to `blocked_ips.txt` so it can be fed into a
 firewall / WAF / fail2ban rule - it does not block traffic itself.
 
+It also flags individual successful logins that look scripted rather than
+human-typed (a hit right after a burst of other usernames from the same
+IP, a known enumeration-tool User-Agent fingerprint, or suspiciously
+uniform request timing), logging those to `scripted_logins.txt` so you can
+force a logout/password reset on the affected account.
+
 Usage:
     python3 login_abuse_monitor.py --log /var/log/nginx/access.log --follow
     python3 login_abuse_monitor.py --log attempts.csv --csv
@@ -34,8 +40,17 @@ DEFAULT_REQUEST_THRESHOLD = 20       # requests/IP within the window
 DEFAULT_USERNAME_THRESHOLD = 10      # distinct usernames/IP within the window
 DEFAULT_FAILURE_RATIO_THRESHOLD = 0.9  # 90%+ failed attempts, with enough volume
 DEFAULT_MIN_SAMPLES_FOR_RATIO = 10
+DEFAULT_PRIOR_ATTEMPTS_FOR_SCRIPTED_SUCCESS = 3  # distinct usernames before a "hit" that make it look scripted
 
 BLOCKLIST_FILE = "blocked_ips.txt"
+COMPROMISED_LOG_FILE = "scripted_logins.txt"
+
+# User-Agent strings baked into known enumeration tools. A successful login
+# that presents one of these verbatim is a strong signal it came from the
+# script, not a person typing into a browser.
+KNOWN_SCRIPT_USER_AGENTS = {
+    "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.77 Mobile Safari/537.36",
+}
 
 # Apache/Nginx "combined" log format:
 # 1.2.3.4 - - [21/Sep/2026:12:00:00 +0000] "POST /login?username=abc123 HTTP/1.1" 200 512 "-" "UA"
@@ -138,23 +153,75 @@ class IpStats:
             return False
         return all(GENERATED_PATTERN_RE.match(u) for u in recent)
 
+    def distinct_usernames_before_last(self):
+        """Distinct usernames seen in the window, excluding the most recent event."""
+        seen = [u for _, u in list(self.usernames)[:-1]]
+        return len(set(seen))
+
+    def has_regular_intervals(self, min_samples=4, max_jitter_ms=50):
+        """True if recent request gaps are suspiciously uniform (bot-paced)."""
+        times = list(self.timestamps)[-min_samples:]
+        if len(times) < min_samples:
+            return False
+        gaps = [t2 - t1 for t1, t2 in zip(times, times[1:])]
+        if not gaps:
+            return False
+        spread = (max(gaps) - min(gaps)) * 1000
+        return spread <= max_jitter_ms
+
 
 class AbuseMonitor:
     def __init__(self, window_seconds, request_threshold, username_threshold,
-                 failure_ratio_threshold, min_samples_for_ratio):
+                 failure_ratio_threshold, min_samples_for_ratio,
+                 prior_attempts_for_scripted_success=DEFAULT_PRIOR_ATTEMPTS_FOR_SCRIPTED_SUCCESS):
         self.window_seconds = window_seconds
         self.request_threshold = request_threshold
         self.username_threshold = username_threshold
         self.failure_ratio_threshold = failure_ratio_threshold
         self.min_samples_for_ratio = min_samples_for_ratio
+        self.prior_attempts_for_scripted_success = prior_attempts_for_scripted_success
         self.stats = defaultdict(lambda: IpStats(window_seconds))
         self.flagged = set()
 
     def process(self, event):
         ip = event["ip"]
         stats = self.stats[ip]
+
+        if event["success"]:
+            self._check_scripted_success(ip, stats, event)
+
         stats.record(event["username"], event["success"], event["ua"])
         self._evaluate(ip, stats)
+
+    def _check_scripted_success(self, ip, stats, event):
+        """Runs on a successful login, using state BEFORE this event is recorded."""
+        reasons = []
+
+        prior_usernames = stats.distinct_usernames()
+        if prior_usernames >= self.prior_attempts_for_scripted_success:
+            reasons.append(
+                f"succeeded right after {prior_usernames} other usernames were "
+                f"tried from this IP in the last {self.window_seconds}s"
+            )
+
+        if event["ua"] in KNOWN_SCRIPT_USER_AGENTS:
+            reasons.append("User-Agent matches a known username-enumeration script's fingerprint")
+
+        if stats.has_regular_intervals():
+            reasons.append("request timing is too uniform to be a person typing")
+
+        if reasons:
+            self._compromised_login_alert(ip, event["username"], reasons)
+
+    def _compromised_login_alert(self, ip, username, reasons):
+        log(f"[CRITICAL] Login for '{username}' from {ip} looks SCRIPTED, not human:", Fore.MAGENTA)
+        for reason in reasons:
+            log(f"    - {reason}", Fore.YELLOW)
+        stamp = datetime.now().strftime("%c")
+        with open(COMPROMISED_LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(f"{stamp} | ip={ip} | username={username} | reasons={'; '.join(reasons)}\n")
+        log(f"    -> logged to {COMPROMISED_LOG_FILE} (consider forcing logout/password reset for '{username}')",
+            Fore.CYAN)
 
     def _evaluate(self, ip, stats):
         reasons = []
@@ -222,6 +289,12 @@ def main():
     parser.add_argument("--username-threshold", type=int, default=DEFAULT_USERNAME_THRESHOLD)
     parser.add_argument("--failure-ratio-threshold", type=float, default=DEFAULT_FAILURE_RATIO_THRESHOLD)
     parser.add_argument("--min-samples-for-ratio", type=int, default=DEFAULT_MIN_SAMPLES_FOR_RATIO)
+    parser.add_argument(
+        "--prior-attempts-for-scripted-success", type=int,
+        default=DEFAULT_PRIOR_ATTEMPTS_FOR_SCRIPTED_SUCCESS,
+        help="Flag a successful login as scripted if this many other usernames were tried "
+             "from the same IP in the window right before it",
+    )
     args = parser.parse_args()
 
     monitor = AbuseMonitor(
@@ -230,6 +303,7 @@ def main():
         username_threshold=args.username_threshold,
         failure_ratio_threshold=args.failure_ratio_threshold,
         min_samples_for_ratio=args.min_samples_for_ratio,
+        prior_attempts_for_scripted_success=args.prior_attempts_for_scripted_success,
     )
 
     parse_line = parse_csv_line if args.csv else parse_combined_line
